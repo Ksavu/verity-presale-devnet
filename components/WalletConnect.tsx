@@ -1,21 +1,38 @@
+"use client";
 import { useState } from "react";
 
-export const WalletConnect = () => {
-  const [connected, setConnected] = useState(false);
+export const WalletConnect = ({ onConnect }: { onConnect: (wallet: string) => void }) => {
   const [wallet, setWallet] = useState<string | null>(null);
 
-  const connectWallet = () => {
-    // Simulacija walleta
-    setWallet("DevnetWallet123...");
-    setConnected(true);
+  const connectWallet = async () => {
+    try {
+      const resp = await window.solana?.connect(); // Phantom wallet
+      const walletAddress = resp.publicKey.toString();
+      setWallet(walletAddress);
+      onConnect(walletAddress);
+    } catch (err) {
+      console.log("Wallet connect canceled or error", err);
+    }
   };
 
   return (
-    <div>
-      {connected ? (
-        <div>Connected: {wallet}</div>
+    <div style={{ marginBottom: "20px", textAlign: "center" }}>
+      {wallet ? (
+        <p style={{ color: "#4facfe" }}>Connected wallet: <b>{wallet}</b></p>
       ) : (
-        <button onClick={connectWallet} style={{ padding: "8px 16px" }}>
+        <button
+          onClick={connectWallet}
+          style={{
+            padding: "10px 20px",
+            background: "linear-gradient(270deg, #4facfe, #00f2fe)",
+            border: "none",
+            borderRadius: "8px",
+            color: "#fff",
+            fontWeight: "bold",
+            cursor: "pointer",
+            marginBottom: "20px"
+          }}
+        >
           Connect Wallet
         </button>
       )}

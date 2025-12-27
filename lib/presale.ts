@@ -1,33 +1,31 @@
 import { CONFIG } from "./config";
 
-export type Buyer = {
-  address: string;
+export interface Buyer {
+  wallet: string;
   amountUSD: number;
-};
+  referral?: string;
+  stablecoin?: string;
+}
 
-const STORAGE_KEY = "verity_buyers";
+let buyers: Buyer[] = [];
 
-const getStoredBuyers = (): Buyer[] => {
-  if (typeof window === "undefined") return [];
-  const raw = localStorage.getItem(STORAGE_KEY);
-  return raw ? JSON.parse(raw) : [];
-};
+export const getBuyers = () => buyers;
 
-const saveBuyers = (buyers: Buyer[]) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(buyers));
+export const addBuyer = (
+  wallet: string,
+  amountUSD: number,
+  referral?: string,
+  stablecoin?: string
+) => {
+  buyers.push({ wallet, amountUSD, referral, stablecoin });
   window.dispatchEvent(new Event("presale_update"));
 };
 
-export const getBuyers = (): Buyer[] => {
-  return getStoredBuyers();
+export const getTotalUSD = () => {
+  return INITIAL_FILLED_USD + buyers.reduce((sum, b) => sum + b.amountUSD, 0);
 };
 
-export const getTotalUSD = (): number => {
-  return getStoredBuyers().reduce((sum, b) => sum + b.amountUSD, 0);
-};
-
-export const addBuyer = (address: string, amountUSD: number) => {
-  const buyers = getStoredBuyers();
-  buyers.push({ address, amountUSD });
-  saveBuyers(buyers);
-};
+export const SOFTCAP = 200_000;
+export const MIN_BUY = 50;
+export const MAX_BUY = 20_000;
+export const INITIAL_FILLED_USD = 100_000;

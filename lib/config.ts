@@ -1,8 +1,6 @@
 export const CONFIG = {
-  tokenName: "Verity",
-  tokenSymbol: "VTY",
-  softcapUSD: 200_000,
-  presaleWallet: "7ALEjJAikbPcRcTRT6722UEa18tHLf5cnz72SABy5NUg",
-  supportedTokens: ["SOL", "USDC", "USDT"],
-  rpcUrl: "https://api.devnet.solana.com",
+  rpcUrl: process.env.NEXT_PUBLIC_SOLANA_NETWORK || "https://api.devnet.solana.com",
+  presaleWallet: process.env.NEXT_PUBLIC_PRESALE_WALLET || "",
+  usdtMint: process.env.NEXT_PUBLIC_USDT_MINT || "",
+  usdcMint: process.env.NEXT_PUBLIC_USDC_MINT || "",
 };
