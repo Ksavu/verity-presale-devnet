@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getTotalUSD } from "../lib/presaledemo";
+import { getTotalUSD } from "../lib/presale";
 import { CONFIG } from "../lib/config";
 
 export const ProgressBar = () => {

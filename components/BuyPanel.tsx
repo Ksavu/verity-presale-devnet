@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { addBuyer } from "../lib/presaledemo";
+import { addBuyer } from "../lib/presale";
 
 export const BuyPanel = () => {
   const [amount, setAmount] = useState(0);

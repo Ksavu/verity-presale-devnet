@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getBuyers, Buyer } from "../lib/presaledemo";
+import { getBuyers, Buyer } from "../lib/presale";
 
 export default function AdminPanel() {
   const [buyers, setBuyers] = useState<Buyer[]>([]);
