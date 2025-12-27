@@ -6,7 +6,7 @@ export const WalletConnect = ({ onConnect }: { onConnect: (wallet: string) => vo
 
   const connectWallet = async () => {
     try {
-      const resp = await window.solana?.connect(); // Phantom wallet
+      const resp = await window.solana?.connect();
       const walletAddress = resp.publicKey.toString();
       setWallet(walletAddress);
       onConnect(walletAddress);
