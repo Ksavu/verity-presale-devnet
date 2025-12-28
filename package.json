@@ -1,18 +1,26 @@
 {
+  "name": "verity-presale-devnet",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
   "dependencies": {
-    "next": "14.1.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "@solana/spl-token": "^0.4.8",
+    "@solana/wallet-adapter-base": "^0.9.27",
+    "@solana/wallet-adapter-react": "^0.15.35",
+    "@solana/wallet-adapter-react-ui": "^0.9.39",
+    "@solana/wallet-adapter-wallets": "^0.19.37",
     "@solana/web3.js": "^1.95.3",
-    "@solana/wallet-adapter-base": "0.9.27",
-    "@solana/wallet-adapter-react": "0.15.35",
-    "@solana/wallet-adapter-wallets": "0.19.24",
-    "@solana/wallet-adapter-react-ui": "0.9.35",
-    "@solana/spl-token": "^0.4.8"
+    "next": "13.5.5",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
   },
   "devDependencies": {
-    "typescript": "5.9.3",
-    "@types/react": "18.2.45",
-    "@types/react-dom": "18.2.18"
+    "@types/react": "18.2.37",
+    "@types/react-dom": "18.2.14",
+    "typescript": "5.9.3"
   }
 }

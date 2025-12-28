@@ -1,41 +1,53 @@
 "use client";
-import { useState } from "react";
 
-export const WalletConnect = ({ onConnect }: { onConnect: (wallet: string) => void }) => {
-  const [wallet, setWallet] = useState<string | null>(null);
+import { useState, useEffect } from "react";
+import { useWallet } from "@solana/wallet-adapter-react";
 
-  const connectWallet = async () => {
+interface WalletConnectProps {
+  onConnect?: (address: string) => void;
+}
+
+export const WalletConnect = ({ onConnect }: WalletConnectProps) => {
+  const { connected, publicKey, connect, disconnect } = useWallet();
+  const [status, setStatus] = useState<string>("Connect Wallet");
+
+  useEffect(() => {
+    if (connected && publicKey) {
+      setStatus("Disconnect Wallet");
+      if (onConnect) onConnect(publicKey.toBase58());
+    } else {
+      setStatus("Connect Wallet");
+      if (onConnect) onConnect("");
+    }
+  }, [connected, publicKey, onConnect]);
+
+  const handleClick = async () => {
     try {
-      const resp = await window.solana?.connect();
-      const walletAddress = resp.publicKey.toString();
-      setWallet(walletAddress);
-      onConnect(walletAddress);
-    } catch (err) {
-      console.log("Wallet connect canceled or error", err);
+      if (connected) {
+        await disconnect();
+      } else {
+        await connect();
+      }
+    } catch (err: any) {
+      console.error("Wallet connection error:", err);
     }
   };
 
   return (
-    <div style={{ marginBottom: "20px", textAlign: "center" }}>
-      {wallet ? (
-        <p style={{ color: "#4facfe" }}>Connected wallet: <b>{wallet}</b></p>
-      ) : (
-        <button
-          onClick={connectWallet}
-          style={{
-            padding: "10px 20px",
-            background: "linear-gradient(270deg, #4facfe, #00f2fe)",
-            border: "none",
-            borderRadius: "8px",
-            color: "#fff",
-            fontWeight: "bold",
-            cursor: "pointer",
-            marginBottom: "20px"
-          }}
-        >
-          Connect Wallet
-        </button>
-      )}
-    </div>
+    <button
+      onClick={handleClick}
+      style={{
+        padding: "10px 20px",
+        background: "#4facfe",
+        color: "#fff",
+        border: "none",
+        borderRadius: "8px",
+        cursor: "pointer",
+        fontWeight: "bold",
+        marginBottom: "20px",
+      }}
+    >
+      {status}
+    </button>
   );
 };
