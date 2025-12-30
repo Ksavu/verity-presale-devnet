@@ -1,53 +1,45 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { useWallet } from "@solana/wallet-adapter-react";
 
+// Dinamički uvoz WalletMultiButton da radi samo na client-u
+const WalletMultiButton = dynamic(
+  () =>
+    import("@solana/wallet-adapter-react-ui").then((mod) => mod.WalletMultiButton),
+  { ssr: false }
+);
+
 interface WalletConnectProps {
-  onConnect?: (address: string) => void;
+  onConnect?: (address: string | null) => void;
 }
 
 export const WalletConnect = ({ onConnect }: WalletConnectProps) => {
-  const { connected, publicKey, connect, disconnect } = useWallet();
-  const [status, setStatus] = useState<string>("Connect Wallet");
+  const { publicKey, connected } = useWallet();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    if (connected && publicKey) {
-      setStatus("Disconnect Wallet");
-      if (onConnect) onConnect(publicKey.toBase58());
-    } else {
-      setStatus("Connect Wallet");
-      if (onConnect) onConnect("");
-    }
-  }, [connected, publicKey, onConnect]);
+    if (onConnect) onConnect(publicKey ? publicKey.toBase58() : null);
+  }, [publicKey, connected, onConnect]);
 
-  const handleClick = async () => {
-    try {
-      if (connected) {
-        await disconnect();
-      } else {
-        await connect();
-      }
-    } catch (err: any) {
-      console.error("Wallet connection error:", err);
-    }
-  };
+  if (!mounted) return null;
 
   return (
-    <button
-      onClick={handleClick}
-      style={{
-        padding: "10px 20px",
-        background: "#4facfe",
-        color: "#fff",
-        border: "none",
-        borderRadius: "8px",
-        cursor: "pointer",
-        fontWeight: "bold",
-        marginBottom: "20px",
-      }}
-    >
-      {status}
-    </button>
+    <div style={{ width: "100%", textAlign: "center", marginBottom: "20px" }}>
+      <WalletMultiButton
+        style={{
+          padding: "10px 20px",
+          backgroundColor: "#4facfe",
+          color: "#fff",
+          border: "none",
+          borderRadius: "8px",
+          fontWeight: "bold",
+          cursor: "pointer",
+        }}
+      />
+    </div>
   );
 };

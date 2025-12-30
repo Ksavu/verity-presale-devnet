@@ -1,32 +1,29 @@
 "use client";
-import { useState, useMemo } from "react";
-import { Connection, clusterApiUrl } from "@solana/web3.js";
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
-import { WalletProvider, useWallet } from "@solana/wallet-adapter-react";
 
-import { BuyPanel } from "../components/BuyPanel";
+import { useMemo, useState } from "react";
+import { Connection } from "@solana/web3.js";
+import { WalletProvider } from "@solana/wallet-adapter-react";
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
+
 import { WalletConnect } from "../components/WalletConnect";
+import { BuyPanel } from "../components/BuyPanel";
 import { ProgressBar } from "../components/ProgressBar";
 import NetworkNodes from "../components/NetworkNodes";
 import AdminPanel from "../components/AdminPanel";
 
 export default function Home() {
-  // fiksni devnet
   const endpoint = useMemo(() => "https://api.devnet.solana.com", []);
   const connection = useMemo(() => new Connection(endpoint), [endpoint]);
-
   const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
 
   return (
     <WalletProvider wallets={wallets} autoConnect>
-      <HomeContent connection={connection} />
+      <MainContent connection={connection} />
     </WalletProvider>
   );
 }
 
-const HomeContent = ({ connection }: { connection: Connection }) => {
-  const { publicKey, connected } = useWallet();
+const MainContent = ({ connection }: { connection: Connection }) => {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
   return (
@@ -58,15 +55,20 @@ const HomeContent = ({ connection }: { connection: Connection }) => {
           alignItems: "center",
         }}
       >
-        <img src="/logo.png" alt="Verity Logo" style={{ width: "150px", marginBottom: "30px" }} />
+        <img
+          src="/logo.png"
+          alt="Verity Logo"
+          style={{ width: "150px", marginBottom: "30px" }}
+        />
         <h1 style={{ marginBottom: "10px" }}>VERITY Presale</h1>
         <p style={{ marginBottom: "20px", fontSize: "18px" }}>1 $VTY = 1 USD</p>
 
-        <WalletConnect onConnect={(addr: string) => setWalletAddress(addr)} />
+        {/* Wallet Connect */}
+        <WalletConnect onConnect={setWalletAddress} />
 
-        {connected && publicKey && (
+        {walletAddress && (
           <p style={{ color: "#4facfe", marginBottom: "20px" }}>
-            Connected: {publicKey.toBase58()}
+            Connected: {walletAddress}
           </p>
         )}
 

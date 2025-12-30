@@ -1,11 +1,13 @@
 "use client";
+
 import { useState } from "react";
 import { PublicKey, Transaction } from "@solana/web3.js";
 import { getAssociatedTokenAddress, createTransferInstruction, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { addBuyer } from "../lib/presale";
 
 export const BuyPanel = ({ connection }: { connection: any }) => {
-  const { publicKey, sendTransaction, connected } = useWallet(); // koristimo useWallet direktno
+  const { publicKey, sendTransaction, connected } = useWallet();
   const [amount, setAmount] = useState<string>("");
   const [referral, setReferral] = useState<string>("");
   const [message, setMessage] = useState("");
@@ -14,11 +16,12 @@ export const BuyPanel = ({ connection }: { connection: any }) => {
   const USDC_MINT = new PublicKey(process.env.NEXT_PUBLIC_USDC_MINT!);
   const PRESALE_WALLET = new PublicKey(process.env.NEXT_PUBLIC_PRESALE_WALLET!);
 
-  const MIN_BUY = 50;
-  const MAX_BUY = 20000;
+  const MIN_BUY = 500;
+  const MAX_BUY = 20_000;
 
   const handleBuy = async (stablecoin: "USDT" | "USDC") => {
-    if (!connected || !publicKey) return; // neće pusta buy ako nije povezan
+    if (!connected || !publicKey) return;
+
     const numericAmount = Number(amount);
     if (isNaN(numericAmount) || numericAmount <= 0) return setMessage("Enter a valid amount");
     if (numericAmount < MIN_BUY) return setMessage(`Minimum purchase is $${MIN_BUY}`);
@@ -47,6 +50,9 @@ export const BuyPanel = ({ connection }: { connection: any }) => {
       setMessage(`You bought $${numericAmount} $VTY with ${stablecoin}`);
       setAmount("");
       setReferral("");
+
+      addBuyer(publicKey.toBase58(), numericAmount, referral.trim(), stablecoin);
+
     } catch (err: any) {
       console.error(err);
       setMessage("Transaction failed: " + err.message);
@@ -60,41 +66,11 @@ export const BuyPanel = ({ connection }: { connection: any }) => {
       <input type="text" placeholder="Referral code (required)" value={referral} onChange={(e) => setReferral(e.target.value)} style={{ width: "80%", padding: "8px", margin: "10px 0", borderRadius: "6px", border: "1px solid #4facfe" }} />
 
       <div style={{ display: "flex", justifyContent: "space-around", marginTop: "10px" }}>
-        <button 
-          onClick={() => handleBuy("USDT")} 
-          style={{ 
-            padding: "8px 12px", 
-            background: connected ? "#26A17B" : "#555", 
-            border: "none", 
-            borderRadius: "8px", 
-            cursor: connected ? "pointer" : "not-allowed", 
-            color: "#fff", 
-            fontWeight: "bold", 
-            display: "flex", 
-            alignItems: "center", 
-            gap: "5px" 
-          }}
-          disabled={!connected}
-        >
+        <button onClick={() => handleBuy("USDT")} style={{ padding: "8px 12px", background: connected ? "#26A17B" : "#555", border: "none", borderRadius: "8px", cursor: connected ? "pointer" : "not-allowed", color: "#fff", fontWeight: "bold", display: "flex", alignItems: "center", gap: "5px" }} disabled={!connected}>
           <img src="/usdt.png" alt="USDT" style={{ width: "16px", height: "16px" }} />
           Buy with USDT
         </button>
-        <button 
-          onClick={() => handleBuy("USDC")} 
-          style={{ 
-            padding: "8px 12px", 
-            background: connected ? "#1E90FF" : "#555", 
-            border: "none", 
-            borderRadius: "8px", 
-            cursor: connected ? "pointer" : "not-allowed", 
-            color: "#fff", 
-            fontWeight: "bold", 
-            display: "flex", 
-            alignItems: "center", 
-            gap: "5px" 
-          }}
-          disabled={!connected}
-        >
+        <button onClick={() => handleBuy("USDC")} style={{ padding: "8px 12px", background: connected ? "#1E90FF" : "#555", border: "none", borderRadius: "8px", cursor: connected ? "pointer" : "not-allowed", color: "#fff", fontWeight: "bold", display: "flex", alignItems: "center", gap: "5px" }} disabled={!connected}>
           <img src="/usdc.png" alt="USDC" style={{ width: "16px", height: "16px" }} />
           Buy with USDC
         </button>
