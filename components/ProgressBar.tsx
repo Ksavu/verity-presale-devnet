@@ -15,7 +15,7 @@ export const ProgressBar = () => {
   // Fetch sa backend-a
   const fetchTotal = async () => {
     try {
-      const res = await fetch("https://buy.veritynetwork.io/php_backend/get_purchases.php");
+      const res = await fetch("https://php.veritynetwork.io/php_backend/get_purchases.php");
       const data = await res.json();
       const sum = data.reduce((acc: number, b: any) => acc + Number(b.amountUSD || 0), 0);
       setTotal(INITIAL_FILLED_USD + sum);

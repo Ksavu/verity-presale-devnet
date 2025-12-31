@@ -11,7 +11,7 @@ export default function AdminPanel() {
   const fetchBuyers = async () => {
     try {
       const res = await fetch(
-        "https://buy.veritynetwork.io/php_backend/get_purchases.php"
+        "https://php.veritynetwork.io/php_backend/get_purchases.php"
       );
       const data: Buyer[] = await res.json();
       setBuyers(data);
@@ -44,14 +44,14 @@ export default function AdminPanel() {
 
   const exportLeaderboard = () => {
     window.open(
-      "https://buy.veritynetwork.io/php_backend/export_leaderboard.php",
+      "https://php.veritynetwork.io/php_backend/export_leaderboard.php",
       "_blank"
     );
   };
 
   const exportAdminCSV = () => {
     window.open(
-      "https://buy.veritynetwork.io/php_backend/export_admin.php?wallet=7ALEjJAikbPcRcTRT6722UEa18tHLf5cnz72SABy5NUg",
+      "https://php.veritynetwork.io/php_backend/export_admin.php?wallet=7ALEjJAikbPcRcTRT6722UEa18tHLf5cnz72SABy5NUg",
       "_blank"
     );
   };

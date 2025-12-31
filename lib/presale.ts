@@ -30,7 +30,7 @@ export const addBuyer = async (
 
   // Send purchase to PHP backend
   try {
-    await fetch("https://buy.veritynetwork.io/php_backend/add_purchase.php", {
+    await fetch("https://php.veritynetwork.io/php_backend/add_purchase.php", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(buyer),
@@ -43,7 +43,7 @@ export const addBuyer = async (
 export const getTotalUSD = async () => {
   try {
     const res = await fetch(
-      "https://buy.veritynetwork.io/php_backend/get_purchases.php"
+      "https://php.veritynetwork.io/php_backend/get_purchases.php"
     );
     const data: Buyer[] = await res.json();
     return INITIAL_FILLED_USD + data.reduce((sum, b) => sum + b.amountUSD, 0);
