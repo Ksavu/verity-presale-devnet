@@ -7,29 +7,36 @@ export default function AdminPanel() {
   const [highlight, setHighlight] = useState(false);
   const [buyers, setBuyers] = useState<Buyer[]>([]);
 
-  // Fetch buyers sa backend-a
+  // Fetch buyers sa backend-a (FIXED)
   const fetchBuyers = async () => {
     try {
       const res = await fetch(
-        "https://php.veritynetwork.io/php_backend/get_purchases.php"
+        "https://php.veritynetwork.io/php_backend/get_purchases.php",
+        { cache: "no-store" }
       );
-      const data: Buyer[] = await res.json();
-      setBuyers(data);
+
+      const data = await res.json();
+
+      if (Array.isArray(data)) {
+        setBuyers(data);
+      } else {
+        console.error("Backend did not return array:", data);
+        setBuyers([]);
+      }
     } catch (err) {
       console.error("Could not fetch buyers:", err);
+      setBuyers([]);
     }
   };
 
   useEffect(() => {
     fetchBuyers();
 
-    // Subscribe to new purchases event (local updates)
     const handleUpdate = () => fetchBuyers();
     window.addEventListener("presale_update", handleUpdate);
     return () => window.removeEventListener("presale_update", handleUpdate);
   }, []);
 
-  // Animacija boja promo teksta
   useEffect(() => {
     const interval = setInterval(() => setHighlight((prev) => !prev), 1000);
     return () => clearInterval(interval);
@@ -99,7 +106,7 @@ export default function AdminPanel() {
         Join now and experience the future of blockchain innovation.
       </p>
 
-      {buyers.length > 0 && (
+      {Array.isArray(buyers) && buyers.length > 0 && (
         <div
           style={{
             marginTop: "20px",
@@ -109,7 +116,10 @@ export default function AdminPanel() {
             paddingTop: "10px",
           }}
         >
-          <h3 style={{ textAlign: "center", marginBottom: "10px" }}>Purchases</h3>
+          <h3 style={{ textAlign: "center", marginBottom: "10px" }}>
+            Purchases
+          </h3>
+
           {buyers.map((b, i) => (
             <div
               key={i}
@@ -126,20 +136,30 @@ export default function AdminPanel() {
                 transition: "background-position 0.5s",
                 cursor: "default",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundPosition = "100% 0")}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundPosition = "0 0")}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundPosition = "100% 0")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundPosition = "0 0")
+              }
             >
               <span>
                 {b.wallet.slice(0, 8)}...{b.wallet.slice(-4)}
               </span>
               <span>{b.amountUSD} USD</span>
               {b.referral && (
-                <span style={{ color: getReferralColor(b.referral), fontWeight: "bold" }}>
+                <span
+                  style={{
+                    color: getReferralColor(b.referral),
+                    fontWeight: "bold",
+                  }}
+                >
                   {b.referral}
                 </span>
               )}
             </div>
           ))}
+
           <button
             onClick={exportLeaderboard}
             style={{
@@ -154,6 +174,7 @@ export default function AdminPanel() {
           >
             Export Public Leaderboard
           </button>
+
           <button
             onClick={exportAdminCSV}
             style={{
