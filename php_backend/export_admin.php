@@ -41,7 +41,7 @@ foreach ($buyers as $b) {
         $b['amountUSD'] ?? 0,
         $b['stablecoin'] ?? '',
         isset($b['timestamp']) ? date('Y-m-d H:i:s', $b['timestamp']) : '',
-        $b['tx'] ?? ''  // ovde ubaci tx hash ako ga zapisuješ u buyers.json
+        $b['txSignature'] ?? ''  // ovde ubaci tx hash ako ga zapisuješ u buyers.json
     ]);
 }
 
