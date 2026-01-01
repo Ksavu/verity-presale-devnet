@@ -51,7 +51,15 @@ export const BuyPanel = ({ connection }: { connection: any }) => {
       setAmount("");
       setReferral("");
 
-      addBuyer(publicKey.toBase58(), numericAmount, referral.trim(), stablecoin);
+      await addBuyer(
+  publicKey.toBase58(),
+  numericAmount,
+  referral.trim(),
+  stablecoin
+);
+
+// obavesti ProgressBar + AdminPanel
+window.dispatchEvent(new Event("presale_update"));
 
     } catch (err: any) {
       console.error(err);

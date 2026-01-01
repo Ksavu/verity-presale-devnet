@@ -8,13 +8,9 @@ export interface Buyer {
 export const SOFTCAP = 200_000;
 export const INITIAL_FILLED_USD = 100_000;
 
-let buyers: Buyer[] = [];
-
-export const loadBuyers = () => buyers;
-export const saveBuyers = () => {};
-
-export const getBuyers = () => buyers;
-
+/**
+ * ADD BUYER → PHP backend
+ */
 export const addBuyer = async (
   wallet: string,
   amountUSD: number,
@@ -22,31 +18,41 @@ export const addBuyer = async (
   stablecoin?: string
 ) => {
   const buyer: Buyer = { wallet, amountUSD, referral, stablecoin };
-  buyers.push(buyer);
 
-  // Trigger local UI update
-  const event = new CustomEvent("presale_update", { detail: buyer });
-  window.dispatchEvent(event);
-
-  // Send purchase to PHP backend
-  try {
-    await fetch("https://php.veritynetwork.io/php_backend/add_purchase.php", {
+  // ⬅️ BITNO: pravi endpoint
+  const res = await fetch(
+    "https://php.veritynetwork.io/php_backend/add_purchases.php",
+    {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(buyer),
-    });
-  } catch (err) {
-    console.error("Backend error:", err);
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to save purchase");
   }
+
+  // ⬅️ tek kad je backend upisao
+  window.dispatchEvent(new Event("presale_update"));
 };
 
+/**
+ * TOTAL USD (ProgressBar)
+ */
 export const getTotalUSD = async () => {
   try {
     const res = await fetch(
-      "https://php.veritynetwork.io/php_backend/get_purchases.php"
+      "https://php.veritynetwork.io/php_backend/get_purchases.php",
+      { cache: "no-store" }
     );
+
     const data: Buyer[] = await res.json();
-    return INITIAL_FILLED_USD + data.reduce((sum, b) => sum + b.amountUSD, 0);
+
+    return (
+      INITIAL_FILLED_USD +
+      data.reduce((sum, b) => sum + Number(b.amountUSD || 0), 0)
+    );
   } catch {
     return INITIAL_FILLED_USD;
   }
