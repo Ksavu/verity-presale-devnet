@@ -22,10 +22,12 @@ arsort($totals);
 
 // CSV output
 $output = fopen('php://output', 'w');
-fputcsv($output, ['Referral', 'AmountUSD']);
+// Jasne kolone
+fputcsv($output, ['Referral', 'TotalAmountUSD']);
 
 foreach ($totals as $ref => $sum) {
     fputcsv($output, [$ref, $sum]);
 }
 
 fclose($output);
+exit;

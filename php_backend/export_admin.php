@@ -32,7 +32,8 @@ usort($buyers, function ($a, $b) {
 });
 
 $output = fopen('php://output', 'w');
-fputcsv($output, ['Wallet', 'Referral', 'AmountUSD', 'Stablecoin', 'Timestamp']);
+// Dodata kolona TxSignature
+fputcsv($output, ['Wallet', 'Referral', 'AmountUSD', 'Stablecoin', 'TxSignature', 'Timestamp']);
 
 foreach ($buyers as $b) {
     fputcsv($output, [
@@ -40,10 +41,10 @@ foreach ($buyers as $b) {
         $b['referral'] ?? '',
         $b['amountUSD'] ?? 0,
         $b['stablecoin'] ?? '',
+        $b['txSignature'] ?? '',
         isset($b['timestamp']) ? date('Y-m-d H:i:s', $b['timestamp']) : ''
     ]);
 }
 
 fclose($output);
 exit;
-

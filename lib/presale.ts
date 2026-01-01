@@ -3,6 +3,7 @@ export interface Buyer {
   amountUSD: number;
   referral?: string;
   stablecoin?: string;
+  txSignature?: string; // dodato
 }
 
 export const SOFTCAP = 200_000;
@@ -15,26 +16,30 @@ export const addBuyer = async (
   wallet: string,
   amountUSD: number,
   referral?: string,
-  stablecoin?: string
+  stablecoin?: string,
+  txSignature?: string
 ) => {
-  const buyer: Buyer = { wallet, amountUSD, referral, stablecoin };
+  const buyer: Buyer = { wallet, amountUSD, referral, stablecoin, txSignature };
 
-  // ⬅️ BITNO: pravi endpoint
-  const res = await fetch(
-    "https://php.veritynetwork.io/php_backend/add_purchases.php",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(buyer),
+  try {
+    const res = await fetch(
+      "https://php.veritynetwork.io/php_backend/add_purchases.php",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(buyer),
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("Failed to save purchase");
     }
-  );
 
-  if (!res.ok) {
-    throw new Error("Failed to save purchase");
+    // Trigger local UI updates
+    window.dispatchEvent(new Event("presale_update"));
+  } catch (err) {
+    console.error("Error saving purchase:", err);
   }
-
-  // ⬅️ tek kad je backend upisao
-  window.dispatchEvent(new Event("presale_update"));
 };
 
 /**
