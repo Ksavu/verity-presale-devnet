@@ -27,13 +27,12 @@ if (!file_exists($file)) {
 $buyers = json_decode(file_get_contents($file), true);
 
 // Sort DESC po amountUSD
-usort($buyers, function ($a, $b) {
+usort($buyers, function($a, $b) {
     return ($b['amountUSD'] ?? 0) <=> ($a['amountUSD'] ?? 0);
 });
 
 $output = fopen('php://output', 'w');
-// Dodata kolona TxSignature
-fputcsv($output, ['Wallet', 'Referral', 'AmountUSD', 'Stablecoin', 'TxSignature', 'Timestamp']);
+fputcsv($output, ['Wallet', 'Referral', 'AmountUSD', 'Stablecoin', 'Timestamp', 'Transaction']);
 
 foreach ($buyers as $b) {
     fputcsv($output, [
@@ -41,8 +40,8 @@ foreach ($buyers as $b) {
         $b['referral'] ?? '',
         $b['amountUSD'] ?? 0,
         $b['stablecoin'] ?? '',
-        $b['txSignature'] ?? '',
-        isset($b['timestamp']) ? date('Y-m-d H:i:s', $b['timestamp']) : ''
+        isset($b['timestamp']) ? date('Y-m-d H:i:s', $b['timestamp']) : '',
+        $b['tx'] ?? ''  // ovde ubaci tx hash ako ga zapisuješ u buyers.json
     ]);
 }
 
