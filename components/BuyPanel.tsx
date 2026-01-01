@@ -51,12 +51,16 @@ export const BuyPanel = ({ connection }: { connection: any }) => {
       setAmount("");
       setReferral("");
 
-      await addBuyer(
-  publicKey.toBase58(),
-  numericAmount,
-  referral.trim(),
-  stablecoin
-);
+      try {
+  await addBuyer(
+    publicKey.toBase58(),
+    numericAmount,
+    referral.trim(),
+    stablecoin
+  );
+} catch (e) {
+  console.warn("Purchase saved on-chain, backend sync failed");
+}
 
 // obavesti ProgressBar + AdminPanel
 window.dispatchEvent(new Event("presale_update"));
